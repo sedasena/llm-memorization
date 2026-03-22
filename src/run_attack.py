@@ -26,18 +26,26 @@ def deduplicate(samples):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--model", default="qwen", 
+                choices=["qwen", "gemma", "deepseek", "llama"])
+    parser.add_argument("--num_samples", type=int, default=200000)
     parser.add_argument("--output", default="results.json")
-    parser.add_argument("--num_samples", type=int, default=230000)
-
     args = parser.parse_args()
+    
+    
     # Cross-model comparison with reference lms and llama3 8b as generator
     #generator_lm = LlamaClient("meta-llama/Llama-3-8B")
+    
+    if args.model == "qwen":
+        generator_lm = QwenClient("Qwen/Qwen3-1.7B")
+        reference_lms = {}
     generator_lm = QwenClient("Qwen/Qwen3-1.7B")
-    reference_lms = {
+    reference_lms = {"small_1": GemmaClient("google/gemma-3-4b-it"),
+                     "small_2": DeepSeekClient("deepseek-ai/DeepSeek-R1")}
        # "qwen": QwenClient("Qwen/Qwen3-1.7B"), 
-        "gemma": GemmaClient("google/gemma-3-4b-it"),
-        "deepseek": DeepSeekClient("deepseek-ai/DeepSeek-R1")
-    }
+        #"gemma": GemmaClient("google/gemma-3-4b-it"),
+        #"deepseek": DeepSeekClient("deepseek-ai/DeepSeek-R1")
+    
         
     results = []
 
