@@ -2,7 +2,10 @@ from torch import device
 import torch
 from .llama3_1_8b_client import LlamaClient
 from transformers import AutoTokenizer, AutoModelForCausalLM
-
+from huggingface_hub import login
+login()
+#import os
+#os.environ["HUGGINGFACE_HUB_TOKEN"] = "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"
 
 class GemmaClient(LlamaClient):
     def __init__(self, model_name="google/gemma-3-4b-it", device=None):
