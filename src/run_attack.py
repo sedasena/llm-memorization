@@ -38,12 +38,12 @@ def main():
     
     if args.model == "qwen":
         generator_lm = QwenClient("Qwen/Qwen3-1.7B")
-        reference_lms = {"small_1": GemmaClient("google/gemma-3-4b-it"),
-                     "small_2": DeepSeekClient("deepseek-ai/DeepSeek-R1")}
-    elif args.model == "gemma":
-        generator_lm = GemmaClient("google/gemma-3-4b-it")
-        reference_lms = {"small_1": GemmaClient("google/gemma-3-4b-it"),
-                     "small_2": DeepSeekClient("deepseek-ai/DeepSeek-R1")}
+        reference_lms = {"small_1": GemmaClient("google/gemma-3-4b-it")}
+                    # "small_2": DeepSeekClient("deepseek-ai/DeepSeek-R1")
+   # elif args.model == "gemma":
+   #     generator_lm = GemmaClient("google/gemma-3-4b-it")
+   #     reference_lms = {"small_1": GemmaClient("google/gemma-3-4b-it"),
+    #                 "small_2": DeepSeekClient("deepseek-ai/DeepSeek-R1")}
         
     #generator_lm = QwenClient("Qwen/Qwen3-1.7B")
     #reference_lms = {"small_1": GemmaClient("google/gemma-3-4b-it"),
