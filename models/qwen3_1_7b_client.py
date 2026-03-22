@@ -15,7 +15,7 @@ class QwenClient():
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
             trust_remote_code=True,
-            torch_dtype=torch.float16 if self.device=="cuda" else torch.float32
+            dtype=torch.float16 if self.device=="cuda" else torch.float32
         )
         
         self.model.eval()
