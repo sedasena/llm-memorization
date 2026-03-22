@@ -5,10 +5,10 @@ from tqdm import tqdm
 
 from models.deepseek_r1_client import DeepSeekClient
 from models.gemma_client import GemmaClient
-from models.llama3_1_8b_client import LlamaClient
+#from models.llama3_1_8b_client import LlamaClient
 from models.qwen3_1_7b_client import QwenClient
 
-from generate_sequences import generate_sample
+from src.generate_sequences import generate_sample
 from evaluation_metrics.sliding_window import sliding_window_perplexity
 from evaluation_metrics.zlib_ratio import zlib_ratio
 from evaluation_metrics.compare_lm import compare_to_smaller_lm, cross_model_membership_score
@@ -31,9 +31,10 @@ def main():
 
     args = parser.parse_args()
     # Cross-model comparison with reference lms and llama3 8b as generator
-    generator_lm = LlamaClient("meta-llama/Llama-3-8B")
+    #generator_lm = LlamaClient("meta-llama/Llama-3-8B")
+    generator_lm = QwenClient("Qwen/Qwen3-1.7B")
     reference_lms = {
-        "qwen": QwenClient("Qwen/Qwen3-1.7B"), 
+       # "qwen": QwenClient("Qwen/Qwen3-1.7B"), 
         "gemma": GemmaClient("google/gemma-3-4b-it"),
         "deepseek": DeepSeekClient("deepseek-ai/DeepSeek-R1")
     }
