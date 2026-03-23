@@ -49,7 +49,7 @@ def main():
    #     reference_lms = {"small_1": GemmaClient("google/gemma-3-4b-it"),
     #                 "small_2": DeepSeekClient("deepseek-ai/DeepSeek-R1")}
         
-    #generator_lm = QwenClient("Qwen/Qwen3-1.7B")
+    #generator_lm = QwenClient("Qwen/Qwen3-1.7B") hier eigentlich llama als big model
     #reference_lms = {"small_1": GemmaClient("google/gemma-3-4b-it"),
                      #"small_2": DeepSeekClient("deepseek-ai/DeepSeek-R1")}
        # "qwen": QwenClient("Qwen/Qwen3-1.7B"), 

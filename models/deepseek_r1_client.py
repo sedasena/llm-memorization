@@ -14,7 +14,7 @@ class DeepSeekClient:
         
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
-            device_map="auto",
+           # device_map="auto",
             trust_remote_code=True,
             dtype=torch.float16 #if self.device=="cuda" else torch.float32
         ).to(self.device)
