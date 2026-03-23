@@ -35,8 +35,7 @@ def main():
     parser.add_argument("--num_samples", type=int, default=200000)
     parser.add_argument("--output", default="results.json")
     args = parser.parse_args()
-    from google.colab import drive
-    drive.mount('/content/drive')
+
     # Cross-model comparison with reference lms and llama3 8b as generator
     #generator_lm = LlamaClient("meta-llama/Llama-3-8B")
     
@@ -65,7 +64,7 @@ def main():
     start_batch = len(results) // batch_size
     print(f"Starting at batch {start_batch}/{num_batches}")
     
-    for _ in tqdm(range(num_batches)):
+    for i in tqdm(range(num_batches)):
         texts = generate_batch(generator_lm, batch_size=batch_size)
         for text in texts:
             sw_gen = sliding_window_perplexity(generator_lm, text, 50, 10)
