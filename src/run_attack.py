@@ -13,6 +13,10 @@ from evaluation_metrics.sliding_window import sliding_window_perplexity
 from evaluation_metrics.zlib_ratio import zlib_ratio
 from evaluation_metrics.compare_lm import compare_to_smaller_lm, cross_model_membership_score
 
+import torch 
+print(torch.cuda.is_available())
+print(torch.cuda.get_device_name(0))
+print(f"VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
 def deduplicate(samples):
     seen = set()
     unique = []
