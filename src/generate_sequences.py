@@ -16,6 +16,7 @@ def generate_sample(client, prefix="", total_tokens=256, top_k=40):
     """ Generates samples based on the chosen client, max token as well as top-k value
     analogous to Carlini et al. 2021. """
     tokenizer = client.tokenizer
+    tokenizer.padding_side = "left"
     model = client.model
     device = client.device
     
@@ -36,18 +37,6 @@ def generate_sample(client, prefix="", total_tokens=256, top_k=40):
             pad_token_id=tokenizer.eos_token_id
         )
         
-    """generated_text = prefix
-    
-        for token in range(total_tokens):
-        temperature = decay_temperature(token)
-        
-        generated_text = client.generate(
-            prompt=generated_text,
-            max_new_tokens=1,
-            temperature=temperature,
-            top_k=top_k
-        )
-    """
     return tokenizer.decode(output_ids[0], skip_special_tokens=True)
     #return generated_text
 

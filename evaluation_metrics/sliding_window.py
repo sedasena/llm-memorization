@@ -5,6 +5,7 @@ import torch
 def sliding_window_perplexity(client, text, window_size=50, stride=10): # check stride later in the paper
     """ This function calculates the minimum sliding perplexity according to a window size of 50 tokens. """
     tokenizer = client.tokenizer
+    tokenizer.padding_side = "left"
     model = client.model
     device = client.device
     
