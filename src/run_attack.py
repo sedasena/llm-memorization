@@ -2,6 +2,9 @@ import argparse
 import json
 import math
 from tqdm import tqdm
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from models.deepseek_r1_client import DeepSeekClient
 from models.gemma_client import GemmaClient
