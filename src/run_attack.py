@@ -65,6 +65,7 @@ def main():
         # Checkpoint laden falls vorhanden
     results = load_checkpoint(args.model)
     start_batch = len(results) // batch_size
+    
     print(f"Starting at batch {start_batch}/{num_batches}")
     
     for i in tqdm(range(num_batches)):

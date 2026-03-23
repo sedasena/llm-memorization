@@ -52,6 +52,7 @@ def generate_sample(client, prefix="", total_tokens=256, top_k=40):
     #return generated_text
 
 def generate_batch(client, batch_size=10, total_tokens=256, top_k=40):
+    """ Creates prompts and calls client.generate_batch """
     tokenizer = client.tokenizer
     model = client.model
     device = client.device
