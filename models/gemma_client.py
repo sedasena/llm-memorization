@@ -25,29 +25,28 @@ class GemmaClient(LlamaClient):
         
         self.model.eval()
         
-    def generate_batch(self, prompts, max_new_tokens=256, top_k=40):
-        inputs = self.tokenizer(
-            prompts,
-            return_tensors="pt",
-            padding=True,
-            truncation=True
-        ).to(self.device)
-
+    def generate(self, prompt="", max_new_tokens=256, temperature=1.0, top_k=40):
+        # einzelner String
+        if not prompt:
+            input_ids = torch.tensor(
+                [[self.tokenizer.eos_token_id]], device=self.device
+            )
+        else:
+            input_ids = self.tokenizer(
+                prompt, return_tensors="pt"
+            )["input_ids"].to(self.device)
+        
         with torch.no_grad():
             output_ids = self.model.generate(
-                input_ids=inputs["input_ids"],
-                attention_mask=inputs["attention_mask"],
+                input_ids,
                 max_new_tokens=max_new_tokens,
                 do_sample=True,
+                temperature=temperature,
                 top_k=top_k,
-                top_p=1.0,
                 pad_token_id=self.tokenizer.eos_token_id
             )
+        return self.tokenizer.decode(output_ids[0], skip_special_tokens=True)
 
-        results = []
-        for ids in output_ids:
-            results.append(self.tokenizer.decode(ids, skip_special_tokens=True))
-        return results    
     
     
     def perplexity(self, text):
