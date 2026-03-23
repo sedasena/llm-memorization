@@ -2,8 +2,8 @@ from torch import device
 import torch
 from .llama3_1_8b_client import LlamaClient
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from huggingface_hub import login
-login()
+#from huggingface_hub import login
+#login()
 #import os
 #os.environ["HUGGINGFACE_HUB_TOKEN"] = "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"
 
