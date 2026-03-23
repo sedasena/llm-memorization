@@ -17,7 +17,8 @@ class GemmaClient(LlamaClient):
         )
     
         self.model = AutoModelForCausalLM.from_pretrained(
-            model_name, # device_map="auto"??
+            model_name,
+            device_map="auto",
             dtype=torch.float16 #if self.device=="cuda" else torch.float32
         ).to(self.device)
         
