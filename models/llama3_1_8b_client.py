@@ -11,7 +11,8 @@ class LlamaClient(BaseClient):
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name, use_fast=True
         )
-    
+        self.tokenizer.padding_side = "left"
+
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
         #    device_map="auto",

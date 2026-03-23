@@ -34,5 +34,6 @@ def cross_model_membership_score(generator, reference_lms, text):
     return {
         "perplexity_gen": perplexity_gen,
         "perplexity_ref": perplexity_ref,
-        "membership_score": score
+        "membership_score": score,
+        "mean_ref": mean_ref
     }

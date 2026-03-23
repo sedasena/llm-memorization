@@ -11,6 +11,7 @@ class DeepSeekClient:
             model_name,
             trust_remote_code=True
         )
+        self.tokenizer.padding_side = "left"
         
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,

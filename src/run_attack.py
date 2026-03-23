@@ -86,8 +86,8 @@ def main():
                 "perplexity_gen": score["perplexity_gen"],                
                 "perplexity_reference": score["perplexity_ref"],
                 "lowercase_ratio": lowercase_ratio,
-                "ref_mean": score["membership_score"],
-                "ratio": score["perplexity_ref"]/ (score["perplexity_gen"] + 1e-8)
+                "mean_ref": score["membership_score"],
+                "ratio": score["mean_ref"] / (score["perplexity_gen"] + 1e-8),
                 **score
             })
             
