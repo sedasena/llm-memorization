@@ -23,8 +23,6 @@ print(torch.cuda.is_available())
 print(torch.cuda.get_device_name(0))
 print(f"VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
 
-USE_INTERNET = True  # sample from internet
-cc_text = None
 
 def deduplicate(samples):
     seen = set()
@@ -74,6 +72,7 @@ def main():
     #results = []
     batch_size = 10
     num_batches = args.num_samples // batch_size
+    cc_text = None
     # laod checkpoint    
     results = load_checkpoint(args.model)
     start_batch = len(results) // batch_size
