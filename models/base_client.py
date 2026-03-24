@@ -10,5 +10,5 @@ class BaseClient(ABC):
         pass
     
     @abstractmethod
-    def perplexity(self, text: str):
+    def calculate_perplexity(self, text: str):
         pass

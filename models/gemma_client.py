@@ -49,7 +49,7 @@ class GemmaClient(LlamaClient):
 
     
     
-    def perplexity(self, text):
+    def calculate_perplexity(self, text):
         inputs = self.tokenizer(text, return_tensors="pt").to(self.device)
         
         outputs = self.model(**inputs, labels=inputs["input_ids"])

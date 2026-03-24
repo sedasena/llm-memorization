@@ -47,7 +47,7 @@ class DeepSeekClient:
         return self.tokenizer.decode(output_ids[0], skip_special_tokens=True)
 
         
-    def perplexity(self, text):
+    def calculate_perplexity(self, text):
         inputs = self.tokenizer(text, return_tensors="pt").to(self.device)
         
         outputs = self.model(
