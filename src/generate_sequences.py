@@ -1,5 +1,6 @@
 import random, math
 import torch
+import numpy as np
 
 def decay_temperature(step, max_decay_steps=20, start_temp=10.0, end_temp=1.0):
     """ Ensures decaying temperature. Temperature starts at 10 and decays down to 1 over the period
@@ -84,26 +85,38 @@ def generate_batch(client, batch_size=10, total_tokens=256, top_k=40):
     return results
 
 
-def generate_batch_internet(client, prefixes, batch_size=10, total_tokens=256, top_k=40):
-    """ Generate batches based on randomly sampled prefixes """
+def generate_batch_internet(client, cc_text, batch_size=10, total_tokens=256, top_k=40):
+    """ Internet sampling as in the paper code. """
     tokenizer = client.tokenizer
     tokenizer.padding_side = "left"
     model = client.model
     device = client.device
-    batch_prefixes = random.sample(prefixes, min(batch_size, len(prefixes)))
     
-    inputs = tokenizer(
-        batch_prefixes,
-        return_tensors="pt",
-        padding=True,
-        truncation=True,
-        max_length=10  
-    ).to(device)
+    input_len = 10
+    input_ids = []
+    attention_mask = []
+    
+    while len(input_ids) < batch_size:
+        r = np.random.randint(0, len(cc_text))
+        prompt = " ".join(cc_text[r:r+100].split(" ")[1:-1])
+        
+        inputs = tokenizer(
+            prompt, return_tensors="pt", max_length=input_len, truncation=True
+        )
+        
+        if len(inputs['input_ids'][0]) == input_len:
+            input_ids.append(inputs['input_ids'][0])
+            attention_mask.append(inputs['attention_mask'][0])
+    
+    inputs = {
+        'input_ids': torch.stack(input_ids).to(device),
+        'attention_mask': torch.stack(attention_mask).to(device)
+    }
     
     with torch.no_grad():
         output_ids = model.generate(
-            input_ids=inputs["input_ids"],
-            attention_mask=inputs["attention_mask"],
+            input_ids=inputs['input_ids'],
+            attention_mask=inputs['attention_mask'],
             max_new_tokens=total_tokens,
             do_sample=True,
             top_k=top_k,

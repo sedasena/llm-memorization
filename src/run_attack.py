@@ -24,7 +24,7 @@ print(torch.cuda.get_device_name(0))
 print(f"VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
 
 USE_INTERNET = True  # sample from internet
-cc_prefixes = None
+cc_text = None
 
 def deduplicate(samples):
     seen = set()
@@ -36,10 +36,9 @@ def deduplicate(samples):
             unique.append(s)
     return unique
 
-def parse_common_crawl(wet_file_path, num_prefixes=10000):
+def parse_common_crawl(wet_file_path):
+    """ Directly taken from the original approach by Carlini et al."""
     with open(wet_file_path) as f:
-        for line in f:
-            line.read
         lines = f.readlines()
         
     start_idx = [i for i in range(len(lines)) if "WARC/1.0" in lines[i]]
@@ -52,7 +51,7 @@ def parse_common_crawl(wet_file_path, num_prefixes=10000):
             count_eng += 1
             for j in range(start+10, end):
                 all_eng += lines[j]
-    
+    return all_eng
 
 def main():
     parser = argparse.ArgumentParser()
@@ -60,6 +59,9 @@ def main():
                 choices=["qwen", "gemma", "deepseek", "llama"])
     parser.add_argument("--num_samples", type=int, default=10000)
     parser.add_argument("--output", default="results.json")
+    parser.add_argument("--internet_sampling", action="store_true")
+    parser.add_argument("--wet_file", type=str, default=None)
+    
     args = parser.parse_args()
 
     # Cross-model comparison with reference lms and llama3 8b as generator
@@ -78,16 +80,14 @@ def main():
     
     print(f"Starting at batch {start_batch}/{num_batches}")
     
-    if USE_INTERNET:
-        print("Loading prefixes from the web...")
-        cc_prefixes = parse_common_crawl(
-            "CC-MAIN-20250126135402-20250126165402-00000.warc.wet.gz"
-        )
-        print(f"{len(cc_prefixes)} prefixes loaded.")
+    if args.internet_sampling and args.wet_file:
+        print("Loading common crawl...")
+        cc_text = parse_common_crawl(args.wet_file)
+        print(f"{len(cc_text)} prefixes loaded.")
         
-    for i in tqdm(range(num_batches)):
-        if USE_INTERNET and cc_prefixes: # random internet sampling
-            texts = generate_batch_internet(generator_lm, cc_prefixes, batch_size=batch_size)
+    for i in tqdm(range(start_batch, num_batches)):
+        if cc_text: # random internet sampling
+            texts = generate_batch_internet(generator_lm, cc_text, batch_size=batch_size)
         else:
             texts = generate_batch(generator_lm, batch_size=batch_size)
             
@@ -110,8 +110,7 @@ def main():
                 "perplexity_reference": score["perplexity_ref"],
                 "lowercase_ratio": lowercase_ratio,
                 "mean_ref": score["membership_score"],
-                "ratio": score["mean_ref"] / (score["perplexity_gen"] + 1e-8),
-                **score
+                "ratio": score["mean_ref"] / (score["perplexity_gen"] + 1e-8)
             })
             
         if i % 100 == 0: # checkpointing for colab
