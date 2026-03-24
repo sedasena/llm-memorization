@@ -6,7 +6,7 @@ class DeepSeekClient:
     """ Class defining the DeepSeek client. Orignally intended to be the original DeepSeek R1 model,
     but ressources available were not sufficient, so deepseek-ai/DeepSeek-R1-Distill-Qwen-14B was chosen instead.
     If needed and possible, the model of course can be chosen directly by the model_name parameter (deepseek-ai/DeepSeek-R1)."""
-    def __init__(self, model_name="deepseek-ai/DeepSeek-R1-Distill-Qwen-14B", device=None):
+    def __init__(self, model_name="deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", device=None):
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         
         self.tokenizer = AutoTokenizer.from_pretrained(

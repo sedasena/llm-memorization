@@ -66,8 +66,8 @@ def main():
     # generator_lm = LlamaClient("meta-llama/Llama-3-8B")
     if args.model == "qwen":
         generator_lm = QwenClient("Qwen/Qwen3-1.7B")
-        reference_lms = {"small_1": GemmaClient("google/gemma-3-4b-it"),
-                          "small_2": DeepSeekClient("deepseek-ai/DeepSeek-R1-Distill-Qwen-14B")}
+        reference_lms = {"qwen_small": GemmaClient("google/gemma-3-4b-it"),
+                          "deepseek_small": DeepSeekClient("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B")}
   
     #results = []
     batch_size = 10
