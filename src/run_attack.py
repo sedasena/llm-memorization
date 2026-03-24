@@ -35,7 +35,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default="qwen", 
                 choices=["qwen", "gemma", "deepseek", "llama"])
-    parser.add_argument("--num_samples", type=int, default=200000)
+    parser.add_argument("--num_samples", type=int, default=10000)
     parser.add_argument("--output", default="results.json")
     args = parser.parse_args()
 
@@ -71,11 +71,11 @@ def main():
     for i in tqdm(range(num_batches)):
         texts = generate_batch(generator_lm, batch_size=batch_size)
         for text in texts:
-            sw_gen = sliding_window_perplexity(generator_lm, text, 50, 10)
-            zlib_score = zlib_ratio(generator_lm.perplexity(text), text)
             perplexity_gen = generator_lm.perplexity(text)
+
+            sw_gen = sliding_window_perplexity(generator_lm, text, 50, 10)
+            zlib_score = zlib_ratio(perplexity_gen, text)
             perplexity_lower = generator_lm.perplexity(text.lower())
-        
             lowercase_ratio = math.log(perplexity_lower + 1e-8) - math.log(perplexity_gen + 1e-8)
             # membership score compares both gen and ref lms perplexity
             score = cross_model_membership_score(generator_lm, reference_lms, text)
