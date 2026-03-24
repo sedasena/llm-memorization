@@ -24,7 +24,7 @@ print(torch.cuda.get_device_name(0))
 print(f"VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
 
 USE_INTERNET = True  # sample from internet
-internet_prefixes = None
+cc_prefixes = None
 
 def deduplicate(samples):
     seen = set()
