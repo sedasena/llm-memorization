@@ -17,6 +17,8 @@ from evaluation_metrics.zlib_ratio import zlib_ratio
 from evaluation_metrics.compare_lm import compare_to_smaller_lm, cross_model_membership_score
 from src.checkpoint import load_checkpoint, save_checkpoint
 import torch 
+import sbert_verifier as SB
+
 print(torch.cuda.is_available())
 print(torch.cuda.get_device_name(0))
 print(f"VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
@@ -40,29 +42,17 @@ def main():
     args = parser.parse_args()
 
     # Cross-model comparison with reference lms and llama3 8b as generator
-    #generator_lm = LlamaClient("meta-llama/Llama-3-8B")
+    # generator_lm = LlamaClient("meta-llama/Llama-3-8B")
     
     if args.model == "qwen":
         generator_lm = QwenClient("Qwen/Qwen3-1.7B")
         reference_lms = {"small_1": GemmaClient("google/gemma-3-4b-it"),
                           "small_2": DeepSeekClient("deepseek-ai/DeepSeek-R1-Distill-Qwen-14B")}
-   # elif args.model == "gemma":
-   #     generator_lm = GemmaClient("google/gemma-3-4b-it")
-   #     reference_lms = {"small_1": GemmaClient("google/gemma-3-4b-it"),
-    #                 "small_2": DeepSeekClient("deepseek-ai/DeepSeek-R1")}
-        
-    #generator_lm = QwenClient("Qwen/Qwen3-1.7B") hier eigentlich llama als big model
-    #reference_lms = {"small_1": GemmaClient("google/gemma-3-4b-it"),
-                     #"small_2": DeepSeekClient("deepseek-ai/DeepSeek-R1")}
-       # "qwen": QwenClient("Qwen/Qwen3-1.7B"), 
-        #"gemma": GemmaClient("google/gemma-3-4b-it"),
-        #"deepseek": DeepSeekClient("deepseek-ai/DeepSeek-R1")
-    
-        
+  
     #results = []
     batch_size = 10
     num_batches = args.num_samples // batch_size
-        # Checkpoint laden falls vorhanden
+    # laod checkpoint    
     results = load_checkpoint(args.model)
     start_batch = len(results) // batch_size
     
