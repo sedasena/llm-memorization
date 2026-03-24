@@ -1,8 +1,8 @@
 import math
 
 def compare_to_smaller_lm(large_lm, small_lm, text):
-    perplexity_large = large_lm.perplexity(text)
-    perplexity_small = small_lm.perplexity(text)
+    perplexity_large = large_lm.calculate_perplexity(text)
+    perplexity_small = small_lm.calculate_perplexity(text)
     
     # ratio
     if perplexity_large > 0:
@@ -21,10 +21,10 @@ def compare_to_smaller_lm(large_lm, small_lm, text):
     
 def cross_model_membership_score(generator, reference_lms, text):
     """This function computes a cross-model membership inference score by aggregating by mean. """
-    perplexity_gen = generator.perplexity(text)
+    perplexity_gen = generator.calculate_perplexity(text)
 
     perplexity_ref = {
-        name: lm.perplexity(text)
+        name: lm.calculate_perplexity(text)
         for name, lm in reference_lms.items()
     }
     

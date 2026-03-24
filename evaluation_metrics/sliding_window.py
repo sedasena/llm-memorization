@@ -12,7 +12,7 @@ def sliding_window_perplexity(client, text, window_size=50, stride=10): # check 
     tokens = tokenizer(text, return_tensors="pt")["input_ids"][0]
     
     if len(tokens) < window_size:
-        return client.perplexity(text)
+        return client.calculate_perplexity(text)
     
     min_perplexity = float("inf")
     
