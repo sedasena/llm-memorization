@@ -75,11 +75,3 @@ class SBertVerifier:
         print(f"\n Result: {len(memorized)}/{len(candidates)} memorized")
         return verified, memorized
 
-
-verifier = SBertVerifier()
-
-# Testfall: ein bekannter Text der online auffindbar sein sollte
-test_text = "The MIT License is a permissive free software license originating at the Massachusetts Institute of Technology"
-
-result = verifier.verify(test_text)
-print(result)
