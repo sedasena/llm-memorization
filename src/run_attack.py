@@ -64,7 +64,7 @@ def main():
 
     # Cross-model comparison with reference lms and llama3 8b as generator
     # generator_lm = LlamaClient("meta-llama/Llama-3-8B")
-    if args.model == "deepseek":
+    if args.model == "qwen":
         generator_lm = QwenClient("Qwen/Qwen3-1.7B")
         reference_lms = {"gemma_small": GemmaClient("google/gemma-3-4b-it"),
                           "deepseek_small": DeepSeekClient("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B")}
