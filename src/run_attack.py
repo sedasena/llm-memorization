@@ -22,6 +22,7 @@ import sbert_verifier as SB
 print(torch.cuda.is_available())
 print(torch.cuda.get_device_name(0))
 print(f"VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
+from src.generate_sequences import generate_batch
 
 
 def deduplicate(samples):
@@ -66,8 +67,8 @@ def main():
     # generator_lm = LlamaClient("meta-llama/Llama-3-8B")
     if args.model == "qwen":
         generator_lm = QwenClient("Qwen/Qwen3-1.7B")
-        reference_lms = {"gemma_small": GemmaClient("google/gemma-3-4b-it"),
-                          "deepseek_small": DeepSeekClient("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B")}
+        reference_lms = {#"gemma_small": GemmaClient("google/gemma-3-4b-it"),
+                          "qwen_small": QwenClient("Qwen/Qwen3-0.6B")}
   
     #results = []
     batch_size = 10
