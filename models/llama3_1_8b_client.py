@@ -45,10 +45,15 @@ class LlamaClient(BaseClient):
 
     
     def calculate_perplexity(self, text):
-        inputs = self.tokenizer(text, return_tensors="pt").to(self.device)
-        
-        outputs = self.model(**inputs, labels=inputs["input_ids"])
-        return torch.exp(outputs.loss).item()
+        input_ids = torch.tensor(
+            self.tokenizer.encode(text)
+        ).unsqueeze(0).to(self.device)
+    
+        with torch.no_grad():
+            outputs = self.model(input_ids, labels=input_ids)
+    
+        loss, logits = outputs[:2]
+        return torch.exp(loss).item()
     
     
         

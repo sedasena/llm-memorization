@@ -62,8 +62,9 @@ def generate_batch(client, batch_size=10, total_tokens=256, top_k=40):
     tokenizer.padding_side = "left"
     model = client.model
     device = client.device
-    # end of sequence tokens for each batch analougous to the paper
-    prompts = [tokenizer.eos_token] * batch_size
+    # end of sequence tokens for each batch
+    bos = tokenizer.bos_token or tokenizer.eos_token
+    prompts = [bos] * batch_size
     inputs = tokenizer(
         prompts, return_tensors="pt", padding=True
     ).to(device)

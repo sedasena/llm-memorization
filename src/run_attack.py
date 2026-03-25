@@ -53,7 +53,7 @@ def parse_common_crawl(wet_file_path):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", default="deepseek", 
+    parser.add_argument("--model", default="qwen", 
                 choices=["qwen", "gemma", "deepseek", "llama"])
     parser.add_argument("--num_samples", type=int, default=10000)
     parser.add_argument("--output", default="results.json")
@@ -65,9 +65,9 @@ def main():
     # Cross-model comparison with reference lms and llama3 8b as generator
     # generator_lm = LlamaClient("meta-llama/Llama-3-8B")
     if args.model == "deepseek":
-        generator_lm = DeepSeekClient("deepseek-ai/DeepSeek-R1-Distill-Qwen-14B")
-        reference_lms = {"qwen_small": GemmaClient("google/gemma-3-4b-it"),
-                          "deepseek_small": QwenClient("Qwen/Qwen3-1.7B")}
+        generator_lm = QwenClient("Qwen/Qwen3-1.7B")
+        reference_lms = {"gemma_small": GemmaClient("google/gemma-3-4b-it"),
+                          "deepseek_small": DeepSeekClient("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B")}
   
     #results = []
     batch_size = 10

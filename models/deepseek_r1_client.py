@@ -19,13 +19,12 @@ class DeepSeekClient:
             model_name,
            # device_map="auto",
             trust_remote_code=True,
-            dtype=torch.float16 #if self.device=="cuda" else torch.float32
+            dtype=torch.float16 
         ).to(self.device)
         
         self.model.eval()
         
     def generate(self, prompt="", max_new_tokens=256, temperature=1.0, top_k=40):
-        # einzelner String
         if not prompt:
             input_ids = torch.tensor(
                 [[self.tokenizer.eos_token_id]], device=self.device
@@ -48,12 +47,12 @@ class DeepSeekClient:
 
         
     def calculate_perplexity(self, text):
-        inputs = self.tokenizer(text, return_tensors="pt").to(self.device)
-        
-        outputs = self.model(
-            **inputs,
-            labels=inputs["input_ids"]
-        )
-        
-        loss = outputs.loss
+        input_ids = torch.tensor(
+            self.tokenizer.encode(text)
+        ).unsqueeze(0).to(self.device)
+    
+        with torch.no_grad():
+            outputs = self.model(input_ids, labels=input_ids)
+    
+        loss, logits = outputs[:2]
         return torch.exp(loss).item()
