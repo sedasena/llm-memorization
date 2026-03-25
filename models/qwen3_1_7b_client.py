@@ -6,11 +6,13 @@ class QwenClient():
     def __init__(self, model_name="Qwen/Qwen3-1.7B", device=None):
         
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
-        
+
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name,
             trust_remote_code=True
-        )        
+        )      
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token  
         self.tokenizer.padding_side = "left"
 
         
@@ -54,14 +56,40 @@ class QwenClient():
         )"""
             
         #return self.tokenizer.decode(output_ids[0], skip_special_tokens=True)
-        
     def calculate_perplexity(self, text):
-        input_ids = torch.tensor(
-            self.tokenizer.encode(text)
-        ).unsqueeze(0).to(self.device)
-    
+        inputs = self.tokenizer(text, return_tensors="pt").to(self.device)
         with torch.no_grad():
-            outputs = self.model(input_ids, labels=input_ids)
-    
-        loss, logits = outputs[:2]
-        return torch.exp(loss).item()
+            outputs = self.model(**inputs, labels=inputs["input_ids"])
+        return torch.exp(outputs.loss).item()
+
+    def calculate_perplexity_batch(self, texts):
+
+        inputs = self.tokenizer(
+            texts,
+            return_tensors="pt",
+            padding=True,
+            truncation=True
+        ).to(self.device)
+
+        with torch.no_grad():
+            outputs = self.model(**inputs, labels=inputs["input_ids"])
+
+        logits = outputs.logits[:, :-1]
+        labels = inputs["input_ids"][:, 1:]
+
+        loss_fct = torch.nn.CrossEntropyLoss(reduction="none")
+
+        loss = loss_fct(
+            logits.reshape(-1, logits.size(-1)),
+            labels.reshape(-1)
+        )
+
+        loss = loss.view(labels.shape)
+
+        mask = labels != self.tokenizer.pad_token_id
+
+        loss_per_text = (loss * mask).sum(dim=1) / mask.sum(dim=1)
+
+        perplexities = torch.exp(loss_per_text)
+
+        return perplexities.tolist()

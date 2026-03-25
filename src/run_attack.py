@@ -18,6 +18,7 @@ from evaluation_metrics.compare_lm import compare_to_smaller_lm, cross_model_mem
 from src.checkpoint import load_checkpoint, save_checkpoint
 import torch 
 import sbert_verifier as SB
+from tqdm import tqdm
 
 print(torch.cuda.is_available())
 print(torch.cuda.get_device_name(0))
@@ -89,30 +90,33 @@ def main():
     for i in tqdm(range(start_batch, num_batches)):
         if cc_text: # random internet sampling
             texts = generate_batch_internet(generator_lm, cc_text, batch_size=batch_size)
+
         else:
             texts = generate_batch(generator_lm, batch_size=batch_size)
+        perplexities_batch = generator_lm.calculate_perplexity_batch(texts)
             
-        for text in texts:
-            perplexity_gen = generator_lm.calculate_perplexity(text)
+        for text, perpl in zip(texts, perplexities_batch):
+          #  perplexity_gen = generator_lm.calculate_perplexity(text)
 
-            sw_gen = sliding_window_perplexity(generator_lm, text, 50, 10)
-            zlib_score = zlib_ratio(perplexity_gen, text)
-            perplexity_lower = generator_lm.calculate_perplexity(text.lower())
-            lowercase_ratio = math.log(perplexity_lower + 1e-8) - math.log(perplexity_gen + 1e-8)
+            #sw_gen = sliding_window_perplexity(generator_lm, text, 50, 10)
+          #  zlib_score = zlib_ratio(perpl, text)
+          #  perplexity_lower = generator_lm.calculate_perplexity(text.lower())
+         #   lowercase_ratio = math.log(perplexity_lower + 1e-8) - math.log(perpl + 1e-8)
             
             # membership score compares both gen and ref lms perplexity
-            score = cross_model_membership_score(generator_lm, reference_lms, text)
+         #   score = cross_model_membership_score(generator_lm, reference_lms, text)
         
             results.append({
                 "text": text,
-                "sw_perplexity_gen": sw_gen,
-                "zlib_ratio": zlib_score,
-                "perplexity_gen": score["perplexity_gen"],                
-                "perplexity_reference": score["perplexity_ref"],
-                "lowercase_ratio": lowercase_ratio,
-                "mean_ref": score["mean_ref"],
-                "membership_score": score["membership_score"],
-                "ratio": score["mean_ref"] / (score["perplexity_gen"] + 1e-8)
+                "perplexity_gen": perpl
+             #   "sw_perplexity_gen": sw_gen,
+             #   "zlib_ratio": zlib_score,
+              #  "perplexity_gen": score["perplexity_gen"],                
+              #  "perplexity_reference": score["perplexity_ref"],
+             #   "lowercase_ratio": lowercase_ratio,
+             #   "mean_ref": score["mean_ref"],
+             #   "membership_score": score["membership_score"],
+             #   "ratio": score["mean_ref"] / (score["perplexity_gen"] + 1e-8)
             })
             
         if i % 100 == 0: # checkpointing for colab
@@ -124,18 +128,34 @@ def main():
     results = deduplicate(results)
 
     # Rank results
-    rankings = {
-        "perplexity": sorted(results, key=lambda x: x["perplexity_gen"]),
-        "membership_score": sorted(results, key=lambda x: -x["membership_score"]),
-        "sw_perplexity_gen": sorted(results, key=lambda x: x["sw_perplexity_gen"]),
-        "ratio": sorted(results, key=lambda x: -x["ratio"]),
-        "zlib_ratio": sorted(results, key=lambda x: -x["zlib_ratio"]),
-        "lowercase_ratio": sorted(results, key=lambda x: -x["lowercase_ratio"]),
-    }
+   # rankings = {
+    #    "perplexity": sorted(results, key=lambda x: x["perplexity_gen"]),
+    #    "membership_score": sorted(results, key=lambda x: -x["membership_score"]),
+    ##    "sw_perplexity_gen": sorted(results, key=lambda x: x["sw_perplexity_gen"]),
+    #    "ratio": sorted(results, key=lambda x: -x["ratio"]),
+    #    "zlib_ratio": sorted(results, key=lambda x: -x["zlib_ratio"]),
+    #    "lowercase_ratio": sorted(results, key=lambda x: -x["lowercase_ratio"]),
+  #  }
     
     TOP_K = 100
- 
-    with open(args.output, "w") as f:
+    results = sorted(results, key=lambda x: x["perplexity_gen"])
+    top_candidates = results[:1000]
+    
+    
+    for sample in tqdm(top_candidates):
+        text = sample["text"]
+        perplexity_lower = generator_lm.calculate_perplexity(text.lower()) # lowercae perplexity
+        perplexity_gen = sample["perplexity_gen"]
+        sample["sw_perplexity_gen"] = sliding_window_perplexity(generator_lm, text, 50, 10)
+        sample["lowercase_ratio"] = math.log(perplexity_lower + 1e-8) - math.log(perplexity_gen + 1e-8)
+        
+        score = cross_model_membership_score(generator_lm, reference_lms, text)
+        sample["membership_score"] = score["membership_score"]
+        sample["perplexity_reference"] = score["perplexity_ref"]
+        sample["mean_ref"] = score["mean_ref"]
+        sample["ratio"] = score["mean_ref"] / (score["perplexity_gen"] + 1e-8)
+        
+    """ with open(args.output, "w") as f:
         json.dump(
             {"results": results,
              "top_k": {
@@ -145,7 +165,7 @@ def main():
                 
             }, f, indent=2)
     
-    print(f"Saved {len(results)} samples to {args.output}")
+    print(f"Saved {len(results)} samples to {args.output}")"""
 
 # Verification    
 
