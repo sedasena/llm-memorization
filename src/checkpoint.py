@@ -1,7 +1,7 @@
 import os
 import json 
 
-CHECKPOINT_FILE = "/content/checkpoint_{}.json"
+CHECKPOINT_FILE = "/content/drive/MyDrive/checkpoint_{}.json"
 
 def load_checkpoint(model_name):
     path = CHECKPOINT_FILE.format(model_name)
