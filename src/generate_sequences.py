@@ -54,7 +54,7 @@ def generate_sample(client, prefix="", total_tokens=256, top_k=40):
         )
         
     return tokenizer.decode(output_ids[0], skip_special_tokens=True)
-    #return generated_text
+
 
 def generate_batch(client, batch_size=10, total_tokens=256, top_k=40):
     """ Creates prompts and calls client.generate_batch """
@@ -62,7 +62,7 @@ def generate_batch(client, batch_size=10, total_tokens=256, top_k=40):
     tokenizer.padding_side = "left"
     model = client.model
     device = client.device
-    
+    # end of sequence tokens for each batch analougous to the paper
     prompts = [tokenizer.eos_token] * batch_size
     inputs = tokenizer(
         prompts, return_tensors="pt", padding=True

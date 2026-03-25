@@ -83,7 +83,8 @@ def main():
         print("Loading common crawl...")
         cc_text = parse_common_crawl(args.wet_file)
         print(f"{len(cc_text)} prefixes loaded.")
-        
+    
+    # Generation loop of samples, either with internet samples or not    
     for i in tqdm(range(start_batch, num_batches)):
         if cc_text: # random internet sampling
             texts = generate_batch_internet(generator_lm, cc_text, batch_size=batch_size)
@@ -108,7 +109,8 @@ def main():
                 "perplexity_gen": score["perplexity_gen"],                
                 "perplexity_reference": score["perplexity_ref"],
                 "lowercase_ratio": lowercase_ratio,
-                "mean_ref": score["membership_score"],
+                "mean_ref": score["mean_ref"],
+                "membership_score": score["membership_score"],
                 "ratio": score["mean_ref"] / (score["perplexity_gen"] + 1e-8)
             })
             
@@ -116,7 +118,8 @@ def main():
             save_checkpoint(results, args.model)
     
     save_checkpoint(results, args.model)
-    # deduplicate elements in the list
+    
+    # Deduplicate elements in the list
     results = deduplicate(results)
 
     # Rank results
@@ -142,7 +145,8 @@ def main():
             }, f, indent=2)
     
     print(f"Saved {len(results)} samples to {args.output}")
-    
+
+# Verification    
 
 if __name__ == "__main__":
     main()

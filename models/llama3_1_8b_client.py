@@ -43,19 +43,6 @@ class LlamaClient(BaseClient):
             )
         return self.tokenizer.decode(output_ids[0], skip_special_tokens=True)
 
-
-    """def generate(self, prompt="", max_new_tokens=256, temperature=1.0, top_k=40):
-        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
-        
-        output_ids = self.model.generate(
-            **inputs,
-            max_new_tokens=max_new_tokens,
-            do_sample=True,
-            temperature=temperature,
-            top_k=top_k
-        )
-        
-        return self.tokenizer.decode(output_ids[0], skip_special_tokens=True)"""
     
     def calculate_perplexity(self, text):
         inputs = self.tokenizer(text, return_tensors="pt").to(self.device)
